@@ -46,6 +46,9 @@ function updateFormState() {
     prevBtn.classList.toggle('hidden', currentStep === 1);
     nextBtn.classList.toggle('hidden', currentStep === totalSteps);
     submitBtn.classList.toggle('hidden', currentStep !== totalSteps);
+    
+    // Scroll container back up to the top gracefully when shifting steps
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function validateStep(step) {
@@ -65,19 +68,23 @@ function toggleCustomRole() {
     const customRoleGroup = document.getElementById('custom-role-group');
     const customInput = document.getElementById('custom-role');
 
-    if (roleSelect.value === 'custom') {
+    if (roleSelect && roleSelect.value === 'custom') {
         customRoleGroup.classList.remove('hidden');
         customInput.setAttribute('required', 'true');
-    } else {
+    } else if (customRoleGroup) {
         customRoleGroup.classList.add('hidden');
         customInput.removeAttribute('required');
     }
 }
 
-// Direct binding for structural change observation
+// Ensure the trigger is available globally
 window.toggleCustomRole = toggleCustomRole;
 
+// Intercept form submission ONLY if validation fails
 document.getElementById('survey-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Form built successfully! Integrate your backend tracking keys next.');
+    if (!validateStep(currentStep)) {
+        e.preventDefault();
+    } else {
+        alert('Thank you! Your submission is being processed securely...');
+    }
 });
