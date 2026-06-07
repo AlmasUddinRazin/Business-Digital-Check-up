@@ -22,80 +22,210 @@
         <div class="step-counter" id="step-counter">Step 1 of 5 (20%)</div>
 
         <form id="survey-form" action="https://formsubmit.co/almas.razin.official@gmail.com" method="POST">
+            
             <div class="form-step active" data-step="1">
                 <h2>Step 1: Business Overview</h2>
+                
                 <div class="input-group">
-                    <label for="biz-name">Business / Company Name *</label>
-                    <input type="text" id="biz-name" required placeholder="Enter company name">
+                    <label for="biz-name">1. Business / Company Name *</label>
+                    <input type="text" id="biz-name" name="Company Name" required placeholder="Enter company name">
                 </div>
+
                 <div class="input-group">
-                    <label for="industry">Industry / Sector *</label>
-                    <select id="industry" required>
+                    <label for="industry">2. Industry / Sector *</label>
+                    <select id="industry" name="Industry" required>
                         <option value="" disabled selected>Select industry</option>
                         <option value="ecom">E-commerce / Retail</option>
-                        <option value="services">Professional Services</option>
-                        <option value="tech">Tech / Software</option>
-                        <option value="other">Other</option>
+                        <option value="services">Professional Services / Consulting</option>
+                        <option value="tech">Tech / Software / SaaS</option>
+                        <option value="education">Education / EdTech</option>
+                        <option value="healthcare">Healthcare / Medical</option>
+                        <option value="other">Other Business Model</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="biz-size">3. Current Team Size *</label>
+                    <select id="biz-size" name="Company Size" required>
+                        <option value="" disabled selected>Select size</option>
+                        <option value="solo">Solopreneur / 1 person</option>
+                        <option value="small">2 - 10 employees</option>
+                        <option value="medium">11 - 50 employees</option>
+                        <option value="large">51+ employees</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="target-audience">4. Who is your primary target audience? *</label>
+                    <select id="target-audience" name="Target Audience" required>
+                        <option value="" disabled selected>Select audience type</option>
+                        <option value="b2c">B2C (Direct to Consumers)</option>
+                        <option value="b2b">B2B (To other businesses)</option>
+                        <option value="both">Marketplace / Both</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-step" data-step="2">
                 <h2>Step 2: Digital Hurdles</h2>
+                
                 <div class="input-group">
-                    <label>What is your biggest digital challenge right now? *</label>
-                    <label class="checkbox-label"><input type="checkbox" name="challenge" value="traffic"> Low website traffic</label>
-                    <label class="checkbox-label"><input type="checkbox" name="challenge" value="leads"> Poor lead conversion</label>
-                    <label class="checkbox-label"><input type="checkbox" name="challenge" value="design"> Outdated website look</label>
-                    <label class="checkbox-label"><input type="checkbox" name="challenge" value="social"> Weak social media footprint</label>
+                    <label>5. What are your biggest digital marketing roadblocks? (Select all) *</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Roadblocks[]" value="Low Traffic"> Low website/page traffic</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Roadblocks[]" value="Poor Conversion"> High traffic but low sales/leads</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Roadblocks[]" value="Ad Spend"> Spending money on ads with no return</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Roadblocks[]" value="Content Creation"> Inconsistent content creation</label>
+                </div>
+
+                <div class="input-group">
+                    <label for="primary-goal">6. What is your primary business goal for the next 90 days? *</label>
+                    <select id="primary-goal" name="90 Day Goal" required>
+                        <option value="" disabled selected>Select main goal</option>
+                        <option value="leads">Generate more qualified sales leads</option>
+                        <option value="brand">Increase local brand awareness</option>
+                        <option value="launch">Launch a brand new product/service</option>
+                        <option value="automate">Automate operations to save time</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="marketing-budget">7. Estimated monthly digital growth budget? *</label>
+                    <select id="marketing-budget" name="Monthly Budget" required>
+                        <option value="" disabled selected>Select budget range</option>
+                        <option value="minimal">Under $500 / month</option>
+                        <option value="growth">$500 - $2,000 / month</option>
+                        <option value="scale">$2,000 - $5,000 / month</option>
+                        <option value="enterprise">$5,000+ / month</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="past-agency">8. Have you worked with a digital growth agency before? *</label>
+                    <select id="past-agency" name="Past Agency Experience" required>
+                        <option value="" disabled selected>Select option</option>
+                        <option value="yes-good">Yes, and had good results</option>
+                        <option value="yes-bad">Yes, but had poor results</option>
+                        <option value="no">No, we handle everything internally</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-step" data-step="3">
                 <h2>Step 3: Current Platforms</h2>
+                
                 <div class="input-group">
-                    <label for="current-site">Existing Website URL (If any)</label>
-                    <input type="url" id="current-site" placeholder="https://example.com">
+                    <label for="current-site">9. Existing Website URL (Leave blank if none)</label>
+                    <input type="url" id="current-site" name="Website URL" placeholder="https://example.com">
                 </div>
+
                 <div class="input-group">
-                    <label>Which operational tools do you currently use?</label>
-                    <label class="checkbox-label"><input type="checkbox" name="tools" value="crm"> CRM software</label>
-                    <label class="checkbox-label"><input type="checkbox" name="tools" value="ads"> Meta / Google Ads</label>
-                    <label class="checkbox-label"><input type="checkbox" name="tools" value="none"> None / Just starting</label>
+                    <label for="site-age">10. If you have a website, how old is its design?</label>
+                    <select id="site-age" name="Website Age">
+                        <option value="" selected>Not Applicable / No Website</option>
+                        <option value="new">Brand new (Less than 1 year)</option>
+                        <option value="modern">1 - 3 years old (Needs small tweaks)</option>
+                        <option value="old">3+ years old (Needs a complete overhaul)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>11. Which social media platforms are active for your business? *</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Active Platforms[]" value="Facebook"> Facebook</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Active Platforms[]" value="Instagram"> Instagram</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Active Platforms[]" value="LinkedIn"> LinkedIn</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Active Platforms[]" value="YouTube/TikTok"> YouTube / TikTok</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Active Platforms[]" value="None"> None / Not active anywhere</label>
+                </div>
+
+                <div class="input-group">
+                    <label>12. Which digital advertising platforms have you tried?</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Ads Tried[]" value="Meta"> Meta Ads (FB / IG)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Ads Tried[]" value="Google"> Google Search / YouTube Ads</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Ads Tried[]" value="LinkedIn"> LinkedIn Sponsored Ads</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Ads Tried[]" value="Never"> We have never run paid ads</label>
+                </div>
+
+                <div class="input-group">
+                    <label>13. Which operational tools do you currently use? (Select all)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Tools Used[]" value="CRM"> CRM (HubSpot, Salesforce, etc.)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Tools Used[]" value="Email Marketing"> Email Marketing (Mailchimp, Klaviyo)</label>
+                    <label class="checkbox-label"><input type="checkbox" name="Tools Used[]" value="Analytics"> Google Analytics / Pixel Tracking</label>
                 </div>
             </div>
 
             <div class="form-step" data-step="4">
-                <h2>Step 4: Your Role</h2>
+                <h2>Step 4: Operational Metrics</h2>
+                
                 <div class="input-group">
-                    <label for="user-role">Your Position / Role *</label>
-                    <select id="user-role" required onchange="toggleCustomRole()">
+                    <label for="lead-count">14. On average, how many digital leads/sales do you get weekly? *</label>
+                    <select id="lead-count" name="Weekly Leads" required>
+                        <option value="" disabled selected>Select volume</option>
+                        <option value="zero">0 - 5 leads</option>
+                        <option value="low">6 - 20 leads</option>
+                        <option value="mid">21 - 100 leads</option>
+                        <option value="high">100+ leads</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="lead-source">15. What is currently your most dependable source of clients? *</label>
+                    <select id="lead-source" name="Main Lead Source" required>
+                        <option value="" disabled selected>Select source</option>
+                        <option value="referrals">Word of mouth / Referrals</option>
+                        <option value="social">Organic Social Media content</option>
+                        <option value="paid">Paid advertising funnels</option>
+                        <option value="outbound">Cold outreach (Email/Calling)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="crm-tracking">16. Do you track and follow up with your leads automatically? *</label>
+                    <select id="crm-tracking" name="Lead Followup Tracking" required>
+                        <option value="" disabled selected>Select system status</option>
+                        <option value="automated">Yes, we use an automated pipeline tool</option>
+                        <option value="manual">Manually via spreadsheets/notebooks</option>
+                        <option value="none">No real system, leads drop through the cracks</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="user-role">17. What is your position/role in the organization? *</label>
+                    <select id="user-role" name="User Role" required onchange="toggleCustomRole()">
                         <option value="" disabled selected>Select your role</option>
-                        <option value="owner">Founder / Owner</option>
-                        <option value="manager">Marketing Manager</option>
-                        <option value="custom">Other (Specify)</option>
+                        <option value="owner">Founder / CEO / Business Owner</option>
+                        <option value="manager">Marketing Director / Manager</option>
+                        <option value="custom">Other Position</option>
                     </select>
                 </div>
                 <div class="input-group hidden" id="custom-role-group">
-                    <label for="custom-role">Please specify your role *</label>
-                    <input type="text" id="custom-role" placeholder="e.g., Operations Lead">
+                    <label for="custom-role">Please specify your exact job title *</label>
+                    <input type="text" id="custom-role" name="Custom Role Specified" placeholder="e.g., Operations Specialist">
                 </div>
             </div>
 
             <div class="form-step" data-step="5">
                 <h2>Step 5: Secure Your Audit</h2>
+                
                 <div class="input-group">
-                    <label for="contact-name">Full Name *</label>
-                    <input type="text" id="contact-name" required placeholder="Your full name">
+                    <label for="contact-name">18. Full Name *</label>
+                    <input type="text" id="contact-name" name="Applicant Name" required placeholder="Your full name">
                 </div>
+
                 <div class="input-group">
-                    <label for="contact-email">Work Email *</label>
-                    <input type="email" id="contact-email" required placeholder="name@company.com">
+                    <label for="contact-email">19. Corporate Work Email *</label>
+                    <input type="email" id="contact-email" name="Applicant Email" required placeholder="name@company.com">
                 </div>
+
                 <div class="input-group">
-                    <label>Preferred Communication Method *</label>
-                    <label class="radio-label"><input type="radio" name="comm" value="email" checked> Email</label>
-                    <label class="radio-label"><input type="radio" name="comm" value="whatsapp"> WhatsApp</label>
+                    <label for="contact-phone">20. Contact Number / WhatsApp *</label>
+                    <input type="text" id="contact-phone" name="Phone Number" required placeholder="e.g., +880 1XXXX-XXXXXX">
+                </div>
+
+                <div class="input-group">
+                    <label>21. Preferred Communication Channel *</label>
+                    <label class="radio-label"><input type="radio" name="Preferred Contact Method" value="Email" checked> Official Email Channels</label>
+                    <label class="radio-label"><input type="radio" name="Preferred Contact Method" value="WhatsApp"> Quick WhatsApp Sync</label>
+                    <label class="radio-label"><input type="radio" name="Preferred Contact Method" value="Call"> Direct Phone Call</label>
                 </div>
             </div>
 
