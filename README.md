@@ -3,7 +3,7 @@
 A lightweight, fully responsive, interactive multi-step survey designed to help businesses evaluate their online footprint, digital hurdles, and website health.
 
 ## 🚀 Live Demo
-[👉 Click here to view the live interactive survey](YOUR_LINK_WILL_GO_HERE)
+[👉 Click here to view the live interactive survey](https://almasuddinrazin.github.io/Business-Digital-Check-up/))
 
 ## ✨ Features
 - **Dynamic 5-Step Interface:** Seamless progression tracking with a visual percentage loader.
