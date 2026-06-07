@@ -1,6 +1,7 @@
 let currentStep = 1;
 const totalSteps = 5;
 
+// Declare DOM element mappings safely
 const steps = document.querySelectorAll('.form-step');
 const progressBar = document.getElementById('progress-bar');
 const stepCounter = document.getElementById('step-counter');
@@ -11,49 +12,65 @@ const themeToggle = document.getElementById('theme-toggle');
 const formElement = document.getElementById('survey-form');
 
 // --- THEME TRACKING ---
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
-
-themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-});
+try {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    if(themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+} catch (e) { console.error("Theme setup error:", e); }
 
 // --- NAVIGATION SYSTEM ---
-nextBtn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-        currentStep++;
-        updateFormState('forward');
-        saveCurrentStepState();
-    }
-});
+if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+        if (validateStep(currentStep)) {
+            currentStep++;
+            updateFormState('forward');
+            saveCurrentStepState();
+        }
+    });
+}
 
-prevBtn.addEventListener('click', () => {
-    currentStep--;
-    updateFormState('backward');
-    saveCurrentStepState();
-});
+if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+        currentStep--;
+        updateFormState('backward');
+        saveCurrentStepState();
+    });
+}
 
 function updateFormState(direction = 'forward') {
+    if (!steps.length) return;
+    
     steps.forEach(step => step.classList.remove('active', 'active-back'));
 
     const activeStepElement = document.querySelector(`[data-step="${currentStep}"]`);
-    
-    if (direction === 'backward') {
-        activeStepElement.classList.add('active-back');
-    } else {
-        activeStepElement.classList.add('active');
+    if (activeStepElement) {
+        if (direction === 'backward') {
+            activeStepElement.classList.add('active-back');
+        } else {
+            activeStepElement.classList.add('active');
+        }
     }
 
-    const progressPercentage = (currentStep / totalSteps) * 100;
-    progressBar.style.width = `${progressPercentage}%`;
-    stepCounter.textContent = `Step ${currentStep} of ${totalSteps} (${progressPercentage}%)`;
+    if (progressBar) {
+        const progressPercentage = (currentStep / totalSteps) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+    }
+    
+    if (stepCounter) {
+        const progressPercentage = (currentStep / totalSteps) * 100;
+        stepCounter.textContent = `Step ${currentStep} of ${totalSteps} (${progressPercentage}%)`;
+    }
 
-    prevBtn.classList.toggle('hidden', currentStep === 1);
-    nextBtn.classList.toggle('hidden', currentStep === totalSteps);
-    submitBtn.classList.toggle('hidden', currentStep !== totalSteps);
+    if (prevBtn) prevBtn.classList.toggle('hidden', currentStep === 1);
+    if (nextBtn) nextBtn.classList.toggle('hidden', currentStep === totalSteps);
+    if (submitBtn) submitBtn.classList.toggle('hidden', currentStep !== totalSteps);
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -76,91 +93,101 @@ function toggleCustomRole() {
     const customInput = document.getElementById('custom-role');
 
     if (roleSelect && roleSelect.value === 'custom') {
-        customRoleGroup.classList.remove('hidden');
-        customInput.setAttribute('required', 'true');
+        if (customRoleGroup) customRoleGroup.classList.remove('hidden');
+        if (customInput) customInput.setAttribute('required', 'true');
     } else if (customRoleGroup) {
         customRoleGroup.classList.add('hidden');
-        customInput.removeAttribute('required');
+        if (customInput) customInput.removeAttribute('required');
     }
 }
-
 window.toggleCustomRole = toggleCustomRole;
 
-// --- ROBUST AUTO-SAVE & RESTORE DATA LOGIC ---
-
-// 1. Real-time Save Listener
-formElement.addEventListener('change', saveAllFormData);
-formElement.addEventListener('input', saveAllFormData);
+// --- AUTO-SAVE LOGIC ---
+if (formElement) {
+    formElement.addEventListener('change', saveAllFormData);
+    formElement.addEventListener('input', saveAllFormData);
+}
 
 function saveAllFormData() {
-    const formData = {};
-    const allInputs = formElement.querySelectorAll('input, select');
-    
-    allInputs.forEach((input, index) => {
-        // Use an internal unique identifier fallback if ID or Name is completely missing
-        const storageKey = input.id || input.name || `input_field_${index}`;
-        
-        if (input.type === 'checkbox') {
-            if (!formData[storageKey]) formData[storageKey] = [];
-            if (input.checked) formData[storageKey].push(input.value);
-        } else if (input.type === 'radio') {
-            if (input.checked) formData[storageKey] = input.value;
-        } else {
-            formData[storageKey] = input.value;
-        }
-    });
-    
-    localStorage.setItem('survey_autosave_data', JSON.stringify(formData));
-}
-
-function saveCurrentStepState() {
-    localStorage.setItem('survey_current_step', currentStep);
-}
-
-// 2. Data Restoration Loop
-function restoreSavedData() {
-    const savedData = localStorage.getItem('survey_autosave_data');
-    const savedStep = localStorage.getItem('survey_current_step');
-    
-    if (savedData) {
-        const data = JSON.parse(savedData);
+    try {
+        const formData = {};
         const allInputs = formElement.querySelectorAll('input, select');
         
         allInputs.forEach((input, index) => {
-            const storageKey = input.id || input.name || `input_field_${index}`;
-            const savedValue = data[storageKey];
+            const storageKey = input.id || input.name || `field_${index}`;
             
-            if (savedValue !== undefined && savedValue !== null) {
-                if (input.type === 'checkbox') {
-                    input.checked = Array.isArray(savedValue) && savedValue.includes(input.value);
-                } else if (input.type === 'radio') {
-                    input.checked = (input.value === savedValue);
-                } else {
-                    input.value = savedValue;
-                }
+            if (input.type === 'checkbox') {
+                if (!formData[storageKey]) formData[storageKey] = [];
+                if (input.checked) formData[storageKey].push(input.value);
+            } else if (input.type === 'radio') {
+                if (input.checked) formData[storageKey] = input.value;
+            } else {
+                formData[storageKey] = input.value;
             }
         });
         
-        // Ensure conditional field groups show up if they were filled out previously
-        toggleCustomRole();
-    }
-    
-    if (savedStep) {
-        currentStep = parseInt(savedStep, 10);
-        updateFormState('forward');
-    }
+        localStorage.setItem('survey_autosave_data', JSON.stringify(formData));
+    } catch(e) { console.error("Error saving form data:", e); }
 }
 
-// Fire data extraction check immediately on initialization
+function saveCurrentStepState() {
+    try {
+        localStorage.setItem('survey_current_step', currentStep);
+    } catch(e) { console.error("Error saving step state:", e); }
+}
+
+// --- RESTORATION LOGIC ---
+function restoreSavedData() {
+    try {
+        const savedData = localStorage.getItem('survey_autosave_data');
+        const savedStep = localStorage.getItem('survey_current_step');
+        
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            const allInputs = formElement.querySelectorAll('input, select');
+            
+            allInputs.forEach((input, index) => {
+                const storageKey = input.id || input.name || `field_${index}`;
+                const savedValue = data[storageKey];
+                
+                if (savedValue !== undefined && savedValue !== null) {
+                    if (input.type === 'checkbox') {
+                        input.checked = Array.isArray(savedValue) && savedValue.includes(input.value);
+                    } else if (input.type === 'radio') {
+                        input.checked = (input.value === savedValue);
+                    } else {
+                        input.value = savedValue;
+                    }
+                }
+            });
+            
+            toggleCustomRole();
+        }
+        
+        if (savedStep) {
+            currentStep = parseInt(savedStep, 10);
+        }
+    } catch (e) {
+        console.error("Error restoring data:", e);
+    }
+    
+    // Always call this at least once to render step state correctly!
+    updateFormState('forward');
+}
+
+// EXECUTE INLINE IMMEDIATELY, THEN DOUBLE CHECK ON FULL WINDOW LOAD
 restoreSavedData();
+window.addEventListener('load', restoreSavedData);
 
 // --- SUBMISSION CLEANUP ---
-formElement.addEventListener('submit', (e) => {
-    if (!validateStep(currentStep)) {
-        e.preventDefault();
-    } else {
-        alert('Thank you! Your submission is being processed securely...');
-        localStorage.removeItem('survey_autosave_data');
-        localStorage.removeItem('survey_current_step');
-    }
-});
+if (formElement) {
+    formElement.addEventListener('submit', (e) => {
+        if (!validateStep(currentStep)) {
+            e.preventDefault();
+        } else {
+            alert('Thank you! Your submission is being processed securely...');
+            localStorage.removeItem('survey_autosave_data');
+            localStorage.removeItem('survey_current_step');
+        }
+    });
+}
