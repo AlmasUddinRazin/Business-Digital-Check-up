@@ -24,18 +24,29 @@ themeToggle.addEventListener('click', () => {
 nextBtn.addEventListener('click', () => {
     if (validateStep(currentStep)) {
         currentStep++;
-        updateFormState();
+        updateFormState('forward');
     }
 });
 
 prevBtn.addEventListener('click', () => {
     currentStep--;
-    updateFormState();
+    updateFormState('backward');
 });
 
-function updateFormState() {
-    steps.forEach(step => step.classList.remove('active'));
-    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+function updateFormState(direction = 'forward') {
+    // Clear out old active animation states cleanly
+    steps.forEach(step => {
+        step.classList.remove('active', 'active-back');
+    });
+
+    const activeStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+    
+    // Apply proper directional slide styling class blocks
+    if (direction === 'backward') {
+        activeStepElement.classList.add('active-back');
+    } else {
+        activeStepElement.classList.add('active');
+    }
 
     // Progress Calculations
     const progressPercentage = (currentStep / totalSteps) * 100;
@@ -47,7 +58,7 @@ function updateFormState() {
     nextBtn.classList.toggle('hidden', currentStep === totalSteps);
     submitBtn.classList.toggle('hidden', currentStep !== totalSteps);
     
-    // Scroll container back up to the top gracefully when shifting steps
+    // Scroll page view up smoothly to focus on the next question group
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -77,10 +88,8 @@ function toggleCustomRole() {
     }
 }
 
-// Ensure the trigger is available globally
 window.toggleCustomRole = toggleCustomRole;
 
-// Intercept form submission ONLY if validation fails
 document.getElementById('survey-form').addEventListener('submit', (e) => {
     if (!validateStep(currentStep)) {
         e.preventDefault();
