@@ -26,14 +26,14 @@ nextBtn.addEventListener('click', () => {
     if (validateStep(currentStep)) {
         currentStep++;
         updateFormState('forward');
-        saveCurrentStepState(); // Remember what step they are on
+        saveCurrentStepState();
     }
 });
 
 prevBtn.addEventListener('click', () => {
     currentStep--;
     updateFormState('backward');
-    saveCurrentStepState(); // Remember what step they are on
+    saveCurrentStepState();
 });
 
 function updateFormState(direction = 'forward') {
@@ -47,12 +47,10 @@ function updateFormState(direction = 'forward') {
         activeStepElement.classList.add('active');
     }
 
-    // Update Progress Bars
     const progressPercentage = (currentStep / totalSteps) * 100;
     progressBar.style.width = `${progressPercentage}%`;
     stepCounter.textContent = `Step ${currentStep} of ${totalSteps} (${progressPercentage}%)`;
 
-    // Toggle navigation visibility
     prevBtn.classList.toggle('hidden', currentStep === 1);
     nextBtn.classList.toggle('hidden', currentStep === totalSteps);
     submitBtn.classList.toggle('hidden', currentStep !== totalSteps);
@@ -88,85 +86,81 @@ function toggleCustomRole() {
 
 window.toggleCustomRole = toggleCustomRole;
 
-// --- AUTO-SAVE & RESTORE DATA LOGIC ---
+// --- ROBUST AUTO-SAVE & RESTORE DATA LOGIC ---
 
-// 1. Save input values in real-time as the user changes them
-formElement.addEventListener('input', () => {
+// 1. Real-time Save Listener
+formElement.addEventListener('change', saveAllFormData);
+formElement.addEventListener('input', saveAllFormData);
+
+function saveAllFormData() {
     const formData = {};
-    const inputs = formElement.querySelectorAll('input, select');
+    const allInputs = formElement.querySelectorAll('input, select');
     
-    inputs.forEach(input => {
+    allInputs.forEach((input, index) => {
+        // Use an internal unique identifier fallback if ID or Name is completely missing
+        const storageKey = input.id || input.name || `input_field_${index}`;
+        
         if (input.type === 'checkbox') {
-            if (!formData[input.name]) formData[input.name] = [];
-            if (input.checked) formData[input.name].push(input.value);
+            if (!formData[storageKey]) formData[storageKey] = [];
+            if (input.checked) formData[storageKey].push(input.value);
         } else if (input.type === 'radio') {
-            if (input.checked) formData[input.name] = input.value;
+            if (input.checked) formData[storageKey] = input.value;
         } else {
-            if (input.value) formData[input.id || input.name] = input.value;
+            formData[storageKey] = input.value;
         }
     });
     
-    sessionStorage.setItem('survey_autosave_data', JSON.stringify(formData));
-});
-
-// 2. Remember the exact step number they were on
-function saveCurrentStepState() {
-    sessionStorage.setItem('survey_current_step', currentStep);
+    localStorage.setItem('survey_autosave_data', JSON.stringify(formData));
 }
 
-// 3. Restore all fields when the page loads or refreshes
+function saveCurrentStepState() {
+    localStorage.setItem('survey_current_step', currentStep);
+}
+
+// 2. Data Restoration Loop
 function restoreSavedData() {
-    const savedData = sessionStorage.getItem('survey_autosave_data');
-    const savedStep = sessionStorage.getItem('survey_current_step');
+    const savedData = localStorage.getItem('survey_autosave_data');
+    const savedStep = localStorage.getItem('survey_current_step');
     
     if (savedData) {
         const data = JSON.parse(savedData);
+        const allInputs = formElement.querySelectorAll('input, select');
         
-        Object.keys(data).forEach(key => {
-            const val = data[key];
+        allInputs.forEach((input, index) => {
+            const storageKey = input.id || input.name || `input_field_${index}`;
+            const savedValue = data[storageKey];
             
-            // Try matching by ID first, then by name attribute
-            const element = document.getElementById(key) || document.getElementsByName(key)[0];
-            
-            if (element) {
-                if (element.tagName === 'SELECT' || element.type === 'text' || element.type === 'email' || element.type === 'url') {
-                    element.value = val;
+            if (savedValue !== undefined && savedValue !== null) {
+                if (input.type === 'checkbox') {
+                    input.checked = Array.isArray(savedValue) && savedValue.includes(input.value);
+                } else if (input.type === 'radio') {
+                    input.checked = (input.value === savedValue);
+                } else {
+                    input.value = savedValue;
                 }
-            } else {
-                // Handle complex element pools like Checkboxes and Radio buttons
-                const checkboxes = document.getElementsByName(key);
-                checkboxes.forEach(cb => {
-                    if (cb.type === 'checkbox' && Array.isArray(val)) {
-                        cb.checked = val.includes(cb.value);
-                    } else if (cb.type === 'radio') {
-                        cb.checked = (cb.value === val);
-                    }
-                });
             }
         });
         
-        // Trigger custom role drop visibility display check if it was previously filled
+        // Ensure conditional field groups show up if they were filled out previously
         toggleCustomRole();
     }
     
-    // Move user back to the step they were viewing before the reset refresh
     if (savedStep) {
         currentStep = parseInt(savedStep, 10);
         updateFormState('forward');
     }
 }
 
-// Fire the recovery checks instantly on script load initialization
+// Fire data extraction check immediately on initialization
 restoreSavedData();
 
-// --- SUBMISSION RECOVERY MANIPULATION ---
+// --- SUBMISSION CLEANUP ---
 formElement.addEventListener('submit', (e) => {
     if (!validateStep(currentStep)) {
         e.preventDefault();
     } else {
         alert('Thank you! Your submission is being processed securely...');
-        // Clear caches cleanly upon success so a new response can be generated next run
-        sessionStorage.removeItem('survey_autosave_data');
-        sessionStorage.removeItem('survey_current_step');
+        localStorage.removeItem('survey_autosave_data');
+        localStorage.removeItem('survey_current_step');
     }
 });
